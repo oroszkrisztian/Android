@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/your_food_image"
+    android:fitsSystemWindows="true">
+
+  <!-- This FrameLayout can be used to place the image as a background -->
+  <ImageView
+      android:id="@+id/splashImage"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scaleType="centerCrop"
+      android:src="@drawable/your_food_image" />
+
+</FrameLayout>
