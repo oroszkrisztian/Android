@@ -1,56 +1,70 @@
 package com.tasty.recipesapp.ui.recipe
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.tasty.recipesapp.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.tasty.recipesapp.databinding.FragmentRecipesBinding
+import com.tasty.recipesapp.ui.recipe.adapter.RecipeAdapter
 
 class RecipesFragment : Fragment() {
 
     private val viewModel: RecipeListViewModel by viewModels()
+    private var _binding: FragmentRecipesBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var recipeAdapter: RecipeAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-
-        return inflater.inflate(R.layout.fragment_recipes, container, false)
+    ): View {
+        _binding = FragmentRecipesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Observe recipes
+        setupRecyclerView()
+        observeViewModel()
+    }
+
+    private fun setupRecyclerView() {
+        recipeAdapter = RecipeAdapter { recipe ->
+            // Handle recipe click
+            Toast.makeText(context, "Clicked: ${recipe.name}", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.recyclerView.apply {
+            adapter = recipeAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+    }
+
+    private fun observeViewModel() {
         viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
-            recipes.forEach { recipe ->
-                Log.d("RecipesFragment", """
-                    Recipe loaded:
-                    Name: ${recipe.name}
-                    Description: ${recipe.description}
-                    Components: ${recipe.components.size}
-                    Instructions: ${recipe.instructions.size}
-                    Nutrition:
-                    - Calories: ${recipe.nutrition.calories}
-                    - Protein: ${recipe.nutrition.protein}g
-                """.trimIndent())
-            }
+            recipeAdapter.updateRecipes(recipes)
         }
 
-        // Observe loading state
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            Log.d("RecipesFragment", "Loading: $isLoading")
+            binding.loadingIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
-        // Observe errors
         viewModel.error.observe(viewLifecycleOwner) { error ->
             error?.let {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
