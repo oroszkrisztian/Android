@@ -10,16 +10,40 @@
         android:name="com.tasty.recipesapp.ui.home.HomeFragment"
         android:label="fragment_home2"
         tools:layout="@layout/fragment_home2" />
+
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.tasty.recipesapp.ui.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+
     <fragment
         android:id="@+id/recipeDetailFragment"
         android:name="com.tasty.recipesapp.ui.recipe.RecipeDetailFragment"
         android:label="fragment_recipe_detail"
-        tools:layout="@layout/fragment_recipe_detail" />
+        tools:layout="@layout/fragment_recipe_detail">
+        <argument
+            android:name="recipeName"
+            app:argType="string" />
+        <argument
+            android:name="recipeDescription"
+            app:argType="string" />
+        <argument
+            android:name="calories"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="servings"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="instructions"
+            app:argType="string" />
+        <argument
+            android:name="ingredients"
+            app:argType="string" />
+    </fragment>
+
     <fragment
         android:id="@+id/recipesFragment"
         android:name="com.tasty.recipesapp.ui.recipe.RecipesFragment"
@@ -35,6 +59,7 @@
         android:name="com.tasty.recipesapp.activities.SplashActivity"
         android:label="activity_splash"
         tools:layout="@layout/activity_splash" />
+
     <activity
         android:id="@+id/mainActivity"
         android:name="com.tasty.recipesapp.activities.MainActivity"

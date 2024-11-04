@@ -6,14 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tasty.recipesapp.R
 import com.tasty.recipesapp.databinding.FragmentRecipesBinding
 import com.tasty.recipesapp.ui.recipe.adapter.RecipeAdapter
 
 class RecipesFragment : Fragment() {
 
-    private val viewModel: RecipeListViewModel by viewModels()
+    private val viewModel: RecipeListViewModel by activityViewModels()
     private var _binding: FragmentRecipesBinding? = null
     private val binding get() = _binding!!
 
@@ -32,7 +35,15 @@ class RecipesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        setupRandomButton()
         observeViewModel()
+    }
+
+    private fun setupRandomButton() {
+        binding.randomRecipeButton.setOnClickListener {
+            viewModel.selectRandomRecipe()
+            findNavController().navigate(R.id.action_recipesFragment_to_recipeDetailFragment)
+        }
     }
 
     private fun setupRecyclerView() {

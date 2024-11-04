@@ -1,24 +1,27 @@
 package com.tasty.recipesapp.ui.recipe.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.tasty.recipesapp.Models.RecipeModel
 
 import com.tasty.recipesapp.databinding.ItemRecipeBinding
+import com.tasty.recipesapp.databinding.ItemRecipeBinding.*
 
 class RecipeAdapter(
     private var recipes: List<RecipeModel> = emptyList(),
     private val onItemClick: (RecipeModel) -> Unit
 ) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateRecipes(newRecipes: List<RecipeModel>) {
         recipes = newRecipes
         notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
-        val binding = ItemRecipeBinding.inflate(
+        val binding = inflate(
             LayoutInflater.from(parent.context),
             parent,
             false

@@ -1,6 +1,7 @@
 package com.tasty.recipesapp.ui.recipe
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,17 +17,15 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
 
     private val repository = RecipeRepository(application)
 
-    // Private MutableLiveData that can be modified
     private val _recipes = MutableLiveData<List<RecipeModel>>()
-
-    // Public LiveData that can only be observed
     val recipes: LiveData<List<RecipeModel>> = _recipes
 
-    // Loading state
+    private val _randomRecipe = MutableLiveData<RecipeModel>()
+    val randomRecipe: LiveData<RecipeModel> = _randomRecipe
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    // Error state
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
@@ -39,14 +38,10 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
             try {
                 _isLoading.value = true
                 _error.value = null
-
-                // Use coroutine for background operation
                 val recipeList = withContext(Dispatchers.IO) {
                     repository.getAllRecipes()
                 }
-
                 _recipes.value = recipeList
-
             } catch (e: Exception) {
                 _error.value = "Failed to load recipes: ${e.message}"
             } finally {
@@ -55,8 +50,15 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    // Function to refresh data
-    fun refreshRecipes() {
-        loadRecipes()
+    fun selectRandomRecipe() {
+        _recipes.value?.let { recipeList ->
+            if (recipeList.isNotEmpty()) {
+                val random = recipeList.random()
+                Log.d("ViewModel", "Selected random recipe: ${random.name}")
+                _randomRecipe.postValue(random) // Change to postValue
+            } else {
+                Log.e("ViewModel", "Recipe list is empty")
+            }
+        } ?: Log.e("ViewModel", "Recipe list is null")
     }
 }
