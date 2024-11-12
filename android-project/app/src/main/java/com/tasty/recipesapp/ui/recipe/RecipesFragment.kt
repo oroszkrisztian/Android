@@ -48,8 +48,10 @@ class RecipesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         recipeAdapter = RecipeAdapter { recipe ->
-            // Handle recipe click
-            Toast.makeText(context, "Clicked: ${recipe.name}", Toast.LENGTH_SHORT).show()
+            // nav based on id
+            val directions = RecipesFragmentDirections
+                .actionRecipesFragmentToRecipeDetailFragment(recipeId = recipe.id)
+            findNavController().navigate(directions)
         }
 
         binding.recyclerView.apply {

@@ -1,6 +1,7 @@
 package com.tasty.recipesapp.ui.recipe.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,7 @@ class RecipeAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
+        Log.d("RecipeAdapter", "onCreateViewHolder")
         val binding = inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -29,7 +31,9 @@ class RecipeAdapter(
         return RecipeViewHolder(binding, onItemClick)
     }
 
+
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
+        Log.d("RecipeAdapter", "onBindViewHolder")
         holder.bind(recipes[position])
     }
 

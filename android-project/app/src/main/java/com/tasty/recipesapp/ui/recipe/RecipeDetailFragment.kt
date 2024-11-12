@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.navArgs
 import com.tasty.recipesapp.Models.RecipeModel
 import com.tasty.recipesapp.databinding.FragmentRecipeDetailBinding
 
@@ -15,6 +16,7 @@ class RecipeDetailFragment : Fragment() {
 
     private var _binding: FragmentRecipeDetailBinding? = null
     private val binding get() = _binding!!
+    private val args: RecipeDetailFragmentArgs by navArgs()
     private val viewModel: RecipeListViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -29,16 +31,15 @@ class RecipeDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d("RecipeDetailFragment", "Fragment created")
-
-        viewModel.randomRecipe.observe(viewLifecycleOwner) { recipe ->
-            Log.d("RecipeDetailFragment", "Received recipe: ${recipe?.name}")
-            recipe?.let {
-                displayRecipeDetails(it)
+        // recipe  ID from viewmodel
+        viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
+            recipes.find { it.id == args.recipeId }?.let { recipe ->
+                displayRecipeDetails(recipe)
             }
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun displayRecipeDetails(recipe: RecipeModel) {
         try {
             binding.apply {

@@ -33,7 +33,7 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
         loadRecipes()
     }
 
-    fun loadRecipes() {
+    private fun loadRecipes() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
