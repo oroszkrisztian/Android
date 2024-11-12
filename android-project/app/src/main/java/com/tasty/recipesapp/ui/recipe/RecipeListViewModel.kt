@@ -29,6 +29,10 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    //for selected recipe
+    private val _selectedRecipe = MutableLiveData<RecipeModel>()
+    val selectedRecipe: LiveData<RecipeModel> = _selectedRecipe
+
     init {
         loadRecipes()
     }
@@ -44,6 +48,38 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
                 _recipes.value = recipeList
             } catch (e: Exception) {
                 _error.value = "Failed to load recipes: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    //fun to get recipe by id
+    fun getRecipeById(recipeId: Int) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                _error.value = null
+
+                // Find recipe from current list first
+                _recipes.value?.find { it.id == recipeId }?.let { recipe ->
+                    _selectedRecipe.value = recipe
+                    return@launch
+                }
+
+                // If not found in current list, load from repository
+                val recipeList = withContext(Dispatchers.IO) {
+                    repository.getAllRecipes()
+                }
+
+                recipeList.find { it.id == recipeId }?.let { recipe ->
+                    _selectedRecipe.value = recipe
+                } ?: run {
+                    _error.value = "Recipe not found"
+                }
+
+            } catch (e: Exception) {
+                _error.value = "Failed to load recipe: ${e.message}"
             } finally {
                 _isLoading.value = false
             }

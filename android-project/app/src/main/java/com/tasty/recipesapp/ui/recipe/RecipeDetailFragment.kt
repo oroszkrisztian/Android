@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
@@ -31,10 +32,13 @@ class RecipeDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // recipe  ID from viewmodel
-        viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
-            recipes.find { it.id == args.recipeId }?.let { recipe ->
-                displayRecipeDetails(recipe)
+        // Get recipe by ID
+        viewModel.getRecipeById(args.recipeId)
+
+        // Observe selected recipe
+        viewModel.selectedRecipe.observe(viewLifecycleOwner) { recipe ->
+            recipe?.let {
+                displayRecipeDetails(it)
             }
         }
     }
