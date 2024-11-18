@@ -32,6 +32,18 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="newRecipeFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="642" />
+                            <option name="y" value="8" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="profileFragment">
                     <value>
                       <LayoutPositions>

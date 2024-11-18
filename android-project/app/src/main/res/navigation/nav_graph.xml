@@ -28,6 +28,12 @@
     </fragment>
 
     <fragment
+        android:id="@+id/newRecipeFragment"
+        android:name="com.tasty.recipesapp.ui.recipe.NewRecipeFragment"
+        android:label="New Recipe"
+        tools:layout="@layout/fragment_new_recipe" />
+
+    <fragment
         android:id="@+id/recipesFragment"
         android:name="com.tasty.recipesapp.ui.recipe.RecipesFragment"
         android:label="fragment_recipes"

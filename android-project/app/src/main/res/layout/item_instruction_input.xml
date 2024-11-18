@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/stepNumberText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="center_vertical"
+        android:textStyle="bold" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginEnd="8dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/instructionInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Instruction"
+            android:inputType="textMultiLine"
+            android:minLines="2" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/removeInstructionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@android:drawable/ic_menu_delete"
+        android:contentDescription="Remove instruction" />
+
+</LinearLayout>

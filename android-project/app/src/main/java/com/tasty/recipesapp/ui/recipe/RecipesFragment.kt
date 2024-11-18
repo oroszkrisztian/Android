@@ -1,6 +1,7 @@
 package com.tasty.recipesapp.ui.recipe
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,16 +28,26 @@ class RecipesFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRecipesBinding.inflate(inflater, container, false)
-        return binding.root
+        try {
+            _binding = FragmentRecipesBinding.inflate(inflater, container, false)
+            return binding.root
+        } catch (e: Exception) {
+            Log.e("RecipesFragment", "Error in onCreateView", e)
+            throw e
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        setupRecyclerView()
-        setupRandomButton()
-        observeViewModel()
+        try {
+            super.onViewCreated(view, savedInstanceState)
+            setupRecyclerView()
+            setupRandomButton()
+            observeViewModel()
+        } catch (e: Exception) {
+            Log.e("RecipesFragment", "Error in onViewCreated", e)
+            // Handle error gracefully
+            Toast.makeText(context, "Error loading recipes: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setupRandomButton() {
