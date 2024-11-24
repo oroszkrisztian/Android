@@ -16,4 +16,7 @@ interface RecipeDao {
 
     @Delete
     suspend fun deleteRecipe(recipe: RecipeEntity)
+
+    @Query("UPDATE recipe SET json = :json WHERE internalId = :id")
+    suspend fun updateRecipe(id: Long, json: String)
 }

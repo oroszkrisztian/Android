@@ -21,6 +21,17 @@ class RecipeRepository(
         return readRecipesFromJson().map { it.toModel() }
     }
 
+    suspend fun toggleFavorite(recipe: RecipeModel) {
+        val updatedRecipe = recipe.copy(isFavorite = !recipe.isFavorite)
+        val recipeJson = gson.toJson(updatedRecipe)
+        recipeDao.updateRecipe(recipe.id.toLong(), recipeJson)
+    }
+
+    // Add function to get favorites
+    suspend fun getFavoriteRecipes(): List<RecipeModel> {
+        return getAllLocalRecipes().filter { it.isFavorite }
+    }
+
     private fun readRecipesFromJson(): List<RecipeDTO> {
         try {
             val jsonString = context.assets
@@ -44,16 +55,35 @@ class RecipeRepository(
 
     // New Room database functions
     suspend fun insertRecipe(recipe: RecipeModel) {
-        val recipeJson = gson.toJson(recipe)
-        val entity = RecipeEntity(json = recipeJson)
-        recipeDao.insertRecipe(entity)
+        try {
+            val recipeJson = gson.toJson(recipe)
+            val entity = RecipeEntity(json = recipeJson)
+            recipeDao.insertRecipe(entity)
+            Log.d("Repository", "Recipe inserted successfully")
+        } catch (e: Exception) {
+            Log.e("Repository", "Error inserting recipe: ${e.message}")
+            Log.e("Repository", "Recipe data: $recipe")
+            throw e
+        }
     }
 
     suspend fun getAllLocalRecipes(): List<RecipeModel> {
-        return recipeDao.getAllRecipes().map { entity ->
-            val jsonObject = JSONObject(entity.json)
-            jsonObject.put("id", entity.internalId)
-            gson.fromJson(jsonObject.toString(), RecipeDTO::class.java).toModel()
+        return try {
+            recipeDao.getAllRecipes().map { entity ->
+                try {
+                    // Directly parse to RecipeModel since that's what we stored
+                    val recipe = gson.fromJson(entity.json, RecipeModel::class.java)
+                    // Update the id from the entity
+                    recipe.copy(id = entity.internalId.toInt())
+                } catch (e: Exception) {
+                    Log.e("Repository", "Error parsing recipe JSON for id ${entity.internalId}: ${e.message}")
+                    Log.e("Repository", "JSON content: ${entity.json}")
+                    throw e
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("Repository", "Error getting all local recipes: ${e.message}")
+            throw e
         }
     }
 
@@ -80,7 +110,8 @@ class RecipeRepository(
             servings = this.numServings,
             components = this.components.mapToComponentModels(),
             instructions = this.instructions.mapToInstructionModels(),
-            nutrition = this.nutrition.toModel()
+            nutrition = this.nutrition.toModel(),
+            isFavorite = this.isFavorite
         )
     }
 

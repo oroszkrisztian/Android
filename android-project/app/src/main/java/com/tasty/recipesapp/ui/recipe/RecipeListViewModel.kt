@@ -41,7 +41,7 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
     val error: LiveData<String?> = _error
 
     init {
-        loadRecipes()
+        //loadRecipes()
         loadLocalRecipes()
     }
 
@@ -114,38 +114,5 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun selectRandomRecipe() {
-        _recipes.value?.let { recipeList ->
-            if (recipeList.isNotEmpty()) {
-                val random = recipeList.random()
-                Log.d("ViewModel", "Selected random recipe: ${random.name}")
-                _randomRecipe.postValue(random)
-            } else {
-                Log.e("ViewModel", "Recipe list is empty")
-            }
-        } ?: Log.e("ViewModel", "Recipe list is null")
-    }
 
-    // Functions for handling local recipes
-    fun saveRecipe(recipe: RecipeModel) {
-        viewModelScope.launch {
-            try {
-                repository.insertRecipe(recipe)
-                loadLocalRecipes() // Reload local recipes
-            } catch (e: Exception) {
-                _error.value = "Failed to save recipe: ${e.message}"
-            }
-        }
-    }
-
-    fun deleteRecipe(recipe: RecipeModel) {
-        viewModelScope.launch {
-            try {
-                repository.deleteRecipe(recipe)
-                loadLocalRecipes() // Reload local recipes
-            } catch (e: Exception) {
-                _error.value = "Failed to delete recipe: ${e.message}"
-            }
-        }
-    }
 }

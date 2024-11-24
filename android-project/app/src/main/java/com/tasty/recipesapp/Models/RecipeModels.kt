@@ -8,7 +8,8 @@ data class RecipeModel(
     val servings: Int,
     val components: List<ComponentModel>,
     val instructions: List<InstructionModel>,
-    val nutrition: NutritionModel
+    val nutrition: NutritionModel,
+    val isFavorite: Boolean = false  // Add this field with default false
 )
 
 data class ComponentModel(

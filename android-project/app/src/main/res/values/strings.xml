@@ -12,4 +12,7 @@
     <string name="recipe_page">Recipe Page</string>
     <string name="profile_page">Profile Page</string>
     <string name="go_to_recipe_details">Go to Recipe Details</string>
+    <string name="add_new_recipe">Add new recipe</string>
+    <string name="back">Back</string>
+    <string name="select_image">Select Image</string>
 </resources>
