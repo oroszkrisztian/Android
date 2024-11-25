@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tasty.recipesapp.databinding.FragmentProfileBinding
 import com.tasty.recipesapp.ui.recipe.ProfileViewModel
 import com.tasty.recipesapp.ui.recipe.adapter.RecipeAdapter
+import androidx.fragment.app.activityViewModels
+
 
 class ProfileFragment : Fragment() {
 
@@ -35,21 +37,24 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        // Create custom adapter for profile view without buttons
         recipeAdapter = RecipeAdapter(
             onItemClick = { recipe ->
                 val directions = ProfileFragmentDirections
                     .actionProfileFragmentToRecipeDetailFragment(recipeId = recipe.id)
                 findNavController().navigate(directions)
             },
-            onFavoriteClick = { recipe ->
-                viewModel.toggleFavorite(recipe)
-            }
+            onFavoriteClick = { /* Empty lambda to disable like button */ },
+            onDeleteClick = { /* Empty lambda to disable delete button */ }
         )
 
         binding.recyclerView.apply {
             adapter = recipeAdapter
             layoutManager = LinearLayoutManager(context)
         }
+
+        // Hide buttons in the recipe items
+        recipeAdapter.setProfileMode(true)  // You'll need to add this to your adapter
     }
 
     private fun observeViewModel() {

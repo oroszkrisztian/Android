@@ -287,7 +287,8 @@ class NewRecipeFragment : Fragment() {
                     protein = protein,
                     fat = fat,
                     carbohydrates = carbs
-                )
+                ),
+                isFavorite = false
             )
 
             // Save recipe

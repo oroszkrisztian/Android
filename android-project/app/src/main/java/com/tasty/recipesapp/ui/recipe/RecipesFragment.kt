@@ -59,6 +59,9 @@ class RecipesFragment : Fragment() {
             },
             onFavoriteClick = { recipe ->
                 viewModel.toggleFavorite(recipe)
+            },
+            onDeleteClick = { recipe ->
+                viewModel.deleteRecipe(recipe)
             }
         )
 
