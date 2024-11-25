@@ -1,9 +1,25 @@
 package main
 
-fun main(args: Array<String>) {
-    println("Hello World!")
+import main.controllers.ItemController
+import main.repositories.ItemRepository
+import main.services.ItemService
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+fun main(args: Array<String>) {
+    val repository = ItemRepository()
+    val service = ItemService(repository)
+    val controller = ItemController(service)
+
+    println("Welcome to the Kotlin quiz!")
+
+    var numQuestions: Int
+    do {
+        println("How many questions would you like to answer? (Maximum: 10)")
+        numQuestions = readLine()?.toIntOrNull() ?: 0
+        if (numQuestions > 10) {
+            println("Please choose no more than 10 questions.")
+        }
+    } while (numQuestions > 10)
+
+
+    controller.quiz(numQuestions)
 }

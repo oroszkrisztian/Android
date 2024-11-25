@@ -1,0 +1,10 @@
+What is the correct way to declare a variable in Kotlin?|var x = 10|int x = 10|x := 10|0
+Which keyword is used to create a subclass in Kotlin?|extend|inherit|override|2
+How do you declare a function in Kotlin?|def myFunc()|fun myFunc()|function myFunc()|1
+What is the entry point for a Kotlin application?|main()|start()|init()|0
+Which of the following is the correct way to create a list in Kotlin?|val list = List()|val list = arrayListOf()|val list = listOf()|2
+Which of these is a correct nullable type in Kotlin?|var name: String?|var name: ?String|var name: String|0
+How can you handle null values safely in Kotlin?|Using try-catch|Using null coalescing operator|Using safe call operator (?.)|2
+What is the purpose of the 'lateinit' keyword?|To delay the initialization of a variable|To declare a constant|To make a function asynchronous|0
+Which of the following is a valid way to create a singleton in Kotlin?|object Singleton|class Singleton|val Singleton|0
+What is a data class in Kotlin?|A class used for networking|A class that only contains state|A class used to hold data|2
