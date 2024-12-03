@@ -1,22 +1,25 @@
 package com.tasty.recipesapp.dao
 
+import android.util.Log
 import androidx.room.*
 import com.tasty.recipesapp.Entity.RecipeEntity
 
 @Dao
 interface RecipeDao {
-    @Insert
-    suspend fun insertRecipe(recipe: RecipeEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRecipe(recipe: RecipeEntity): Long
 
-    @Query("SELECT * FROM recipe WHERE internalId = :id")
-    suspend fun getRecipeById(id: Long): RecipeEntity?
-
+    @Transaction
     @Query("SELECT * FROM recipe")
     suspend fun getAllRecipes(): List<RecipeEntity>
 
-    @Delete
-    suspend fun deleteRecipe(recipe: RecipeEntity)
+    @Query("SELECT COUNT(*) FROM recipe")
+    suspend fun getRecipeCount(): Int
 
-    @Query("UPDATE recipe SET json = :json WHERE internalId = :id")
-    suspend fun updateRecipe(id: Long, json: String)
+    @Transaction
+    @Query("SELECT * FROM recipe WHERE recipe_id = :apiId")
+    suspend fun getRecipeByApiId(apiId: Int): RecipeEntity?
+
+    @Query("DELETE FROM recipe WHERE recipe_id = :apiId")
+    suspend fun deleteByApiId(apiId: Int)
 }

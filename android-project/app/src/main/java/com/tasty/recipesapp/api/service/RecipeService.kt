@@ -1,6 +1,10 @@
 package com.tasty.recipesapp.api.service
 
+
+
 import com.tasty.recipesapp.api.dto.ApiRecipeDTO
+import com.tasty.recipesapp.model.RecipeResponse
+import com.tasty.recipesapp.model.SingleRecipeResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 

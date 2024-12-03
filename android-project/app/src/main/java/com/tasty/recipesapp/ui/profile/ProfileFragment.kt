@@ -9,17 +9,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tasty.recipesapp.databinding.FragmentProfileBinding
-import com.tasty.recipesapp.ui.recipe.adapter.RecipeAdapter
+
 import androidx.fragment.app.activityViewModels
 import com.tasty.recipesapp.Respository.ProfileViewModel
+import com.tasty.recipesapp.ui.recipe.adapter.RecipeListAdapter
 
 
 class ProfileFragment : Fragment() {
-
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ProfileViewModel by activityViewModels()
-    private lateinit var recipeAdapter: RecipeAdapter
+    private lateinit var recipeAdapter: RecipeListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,35 +31,27 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupRecyclerView()
         observeViewModel()
+        viewModel.loadFavorites()  // Make sure favorites are loaded
     }
 
     private fun setupRecyclerView() {
-        // Create custom adapter for profile view without buttons
-        recipeAdapter = RecipeAdapter(
-            onItemClick = { recipe ->
-                val directions = ProfileFragmentDirections
-                    .actionProfileFragmentToRecipeDetailFragment(recipeId = recipe.id)
-                findNavController().navigate(directions)
-            },
-            onFavoriteClick = { /* Empty lambda to disable like button */ },
-            onDeleteClick = { /* Empty lambda to disable delete button */ }
+        recipeAdapter = RecipeListAdapter(
+            onFavoriteClick = { recipe ->
+                viewModel.toggleFavorite(recipe)
+            }
         )
-
         binding.recyclerView.apply {
             adapter = recipeAdapter
             layoutManager = LinearLayoutManager(context)
         }
-
-        // Hide buttons in the recipe items
-        recipeAdapter.setProfileMode(true)  // You'll need to add this to your adapter
     }
 
     private fun observeViewModel() {
-        viewModel.favorites.observe(viewLifecycleOwner) { recipes ->
-            recipeAdapter.updateRecipes(recipes)
+        viewModel.favorites.observe(viewLifecycleOwner) { favorites ->
+            recipeAdapter.updateRecipes(favorites)
+            recipeAdapter.updateFavorites(favorites)
         }
     }
 

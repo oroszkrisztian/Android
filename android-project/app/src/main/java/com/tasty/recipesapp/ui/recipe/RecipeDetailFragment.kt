@@ -41,14 +41,14 @@ class RecipeDetailFragment : Fragment() {
         }
 
         // Get recipe by ID
-        viewModel.getRecipeById(args.recipeId)
+        //viewModel.getRecipeById(args.recipeId)
 
         // Observe selected recipe
-        viewModel.selectedRecipe.observe(viewLifecycleOwner) { recipe ->
-            recipe?.let {
-                displayRecipeDetails(it)
-            }
-        }
+//        viewModel.selectedRecipe.observe(viewLifecycleOwner) { recipe ->
+//            recipe?.let {
+//                displayRecipeDetails(it)
+//            }
+//        }
     }
 
 

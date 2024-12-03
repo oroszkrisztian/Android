@@ -6,12 +6,15 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.Transaction
 import com.google.gson.Gson
 import com.tasty.recipesapp.DTO.*
 import com.tasty.recipesapp.Models.*
 import com.tasty.recipesapp.Entity.RecipeEntity
 import com.tasty.recipesapp.api.client.RecipeApiClient
+import com.tasty.recipesapp.api.dto.ApiRecipeDTO
 import com.tasty.recipesapp.dao.RecipeDao
 import com.tasty.recipesapp.database.RecipeDatabase
 import kotlinx.coroutines.launch
@@ -19,16 +22,11 @@ import org.json.JSONObject
 import java.io.IOException
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = RecipeRepository(
-        application,
-        RecipeDatabase.getDatabase(application).recipeDao()
-    )
+    private val dao = RecipeDatabase.getDatabase(application).recipeDao()
+    private val repository = RecipeRepository(dao)
 
-    private val _myRecipes = MutableLiveData<List<RecipeModel>>()
-    val myRecipes: LiveData<List<RecipeModel>> = _myRecipes
-
-    private val _favorites = MutableLiveData<List<RecipeModel>>()
-    val favorites: LiveData<List<RecipeModel>> = _favorites
+    private val _recipes = MutableLiveData<List<ApiRecipeDTO>>()
+    val recipes: LiveData<List<ApiRecipeDTO>> = _recipes
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -36,109 +34,61 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    private val _selectedRecipe = MutableLiveData<RecipeModel?>()
-    val selectedRecipe: LiveData<RecipeModel?> = _selectedRecipe
+    private val _favorites = MutableLiveData<List<ApiRecipeDTO>>()
+    val favorites: LiveData<List<ApiRecipeDTO>> = _favorites
 
     init {
-        loadMyRecipes()
+        loadRecipes()  // Add this
         loadFavorites()
     }
 
-    //API
-    fun loadApiRecipes() {
-        viewModelScope.launch {
-            repository.testApiConnection() // This will update the LiveData
-        }
-    }
-
-
-    ////LOCAL DB
-
-    // Add toggle favorite function
-    fun toggleFavorite(recipe: RecipeModel) {
+    fun loadFavorites() {
         viewModelScope.launch {
             try {
-                repository.toggleFavorite(recipe)
-                loadMyRecipes()  // Reload to update the UI
-                loadFavorites()  // Reload favorites
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Failed to update favorite: ${e.message}"
-            }
-        }
-    }
-
-    // Add load favorites function
-    private fun loadFavorites() {
-        viewModelScope.launch {
-            try {
-                _favorites.value = repository.getFavoriteRecipes()
-                _error.value = null
+                val favs = repository.getFavoriteRecipes()
+                _favorites.value = favs
+                Log.d("com.tasty.recipeapp", "Loaded ${favs.size} favorites")
             } catch (e: Exception) {
                 _error.value = "Failed to load favorites: ${e.message}"
             }
         }
     }
 
-    private fun loadMyRecipes() {
+    fun loadRecipes() {
         viewModelScope.launch {
             _isLoading.value = true
-            try {
-                _myRecipes.value = repository.getAllLocalRecipes()
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Failed to load recipes: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
+            repository.getRecipes().fold(
+                onSuccess = { recipes ->
+                    _recipes.value = recipes
+                    _error.value = null
+                    Log.d("com.tasty.recipeapp", "Loaded ${recipes.size} recipes")
+                },
+                onFailure = { e ->
+                    _error.value = e.message
+                }
+            )
+            _isLoading.value = false
         }
     }
 
-    fun getRecipeById(id: Int) {
+    fun toggleFavorite(recipe: ApiRecipeDTO) {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
-                // First try to find in the current list
-                _myRecipes.value?.find { it.id == id }?.let {
-                    _selectedRecipe.value = it
-                    return@launch
-                }
+                val currentFavorites = repository.getFavoriteRecipes()
+                val isFavorited = currentFavorites.any { it.recipeID == recipe.recipeID }
 
-                // If not found in current list, try to load from repository
-                val recipe = repository.getLocalRecipeById(id.toLong())
-                if (recipe != null) {
-                    _selectedRecipe.value = recipe
+                if (isFavorited) {
+                    repository.deleteRecipe(recipe.recipeID)
                 } else {
-                    _error.value = "Recipe not found"
+                    repository.saveRecipe(recipe)
                 }
-            } catch (e: Exception) {
-                _error.value = "Failed to load recipe: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
 
-    fun addRecipe(recipe: RecipeModel) {
-        viewModelScope.launch {
-            try {
-                repository.insertRecipe(recipe)
-                loadMyRecipes() // Reload the list
-                _error.value = null
+                loadFavorites() // Refresh favorites
+                loadRecipes()   // Refresh recipes to update UI state
+                Log.d("com.tasty.recipeapp", "Toggle favorite completed for recipe ${recipe.recipeID}")
             } catch (e: Exception) {
-                _error.value = "Failed to add recipe: ${e.message}"
-            }
-        }
-    }
-
-    fun deleteRecipe(recipe: RecipeModel) {
-        viewModelScope.launch {
-            try {
-                repository.deleteRecipe(recipe)
-                loadMyRecipes() // Reload the list
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Failed to delete recipe: ${e.message}"
+                Log.e("com.tasty.recipeapp", "Failed to toggle favorite for recipe ${recipe.recipeID}", e)
+                _error.value = "Failed to update favorite: ${e.message}"
             }
         }
     }

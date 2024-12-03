@@ -293,7 +293,7 @@ class NewRecipeFragment : Fragment() {
             )
 
             // Save recipe
-            viewModel.addRecipe(recipe)
+            //viewModel.addRecipe(recipe)
             Toast.makeText(context, "Recipe saved successfully", Toast.LENGTH_SHORT).show()
             findNavController().navigateUp()
 

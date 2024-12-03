@@ -52,10 +52,15 @@ dependencies {
     // Retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
 
     // Converter for JSON (like Gson)
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
+
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
 
     // Room dependencies
     implementation("androidx.room:room-runtime:2.6.0")

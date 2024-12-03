@@ -13,80 +13,58 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tasty.recipesapp.R
 import com.tasty.recipesapp.Respository.ProfileViewModel
 import com.tasty.recipesapp.databinding.FragmentRecipesBinding
-import com.tasty.recipesapp.ui.recipe.adapter.RecipeAdapter
+import com.tasty.recipesapp.ui.recipe.adapter.RecipeListAdapter
 
 class RecipesFragment : Fragment() {
-
     private val viewModel: ProfileViewModel by activityViewModels()
     private var _binding: FragmentRecipesBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var recipeAdapter: RecipeAdapter
+    private lateinit var recipeAdapter: RecipeListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        try {
-            _binding = FragmentRecipesBinding.inflate(inflater, container, false)
-            return binding.root
-        } catch (e: Exception) {
-            Log.e("RecipesFragment", "Error in onCreateView", e)
-            throw e
-        }
+        _binding = FragmentRecipesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        try {
-            super.onViewCreated(view, savedInstanceState)
-            setupRecyclerView()
-            observeViewModel()
-            viewModel.loadApiRecipes()
-            binding.addRecipeButton.setOnClickListener {
-                findNavController().navigate(R.id.action_profileFragment_to_newRecipeFragment)
-            }
-        } catch (e: Exception) {
-            Log.e("RecipesFragment", "Error in onViewCreated", e)
-            Toast.makeText(context, "Error loading recipes: ${e.message}", Toast.LENGTH_LONG).show()
-        }
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        observeViewModel()
+        viewModel.loadRecipes()
+        viewModel.loadFavorites() // Add this line
     }
 
     private fun setupRecyclerView() {
-        recipeAdapter = RecipeAdapter(
-            onItemClick = { recipe ->
-                val directions = RecipesFragmentDirections
-                    .actionRecipesFragmentToRecipeDetailFragment(recipeId = recipe.id)
-                findNavController().navigate(directions)
-            },
+        recipeAdapter = RecipeListAdapter(
             onFavoriteClick = { recipe ->
                 viewModel.toggleFavorite(recipe)
-            },
-            onDeleteClick = { recipe ->
-                viewModel.deleteRecipe(recipe)
             }
         )
-
         binding.recyclerView.apply {
             adapter = recipeAdapter
             layoutManager = LinearLayoutManager(context)
         }
     }
+
     private fun observeViewModel() {
-        // Use myRecipes from ProfileViewModel instead of recipes
-        viewModel.myRecipes.observe(viewLifecycleOwner) { recipes ->
+        viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
             recipeAdapter.updateRecipes(recipes)
+        }
+
+        viewModel.favorites.observe(viewLifecycleOwner) { favorites ->
+            recipeAdapter.updateFavorites(favorites)
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.loadingIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
-        // You might want to handle errors differently in ProfileViewModel
-        // This assumes you have similar error handling in ProfileViewModel
         viewModel.error.observe(viewLifecycleOwner) { error ->
             error?.let {
-                Log.e("RecipesFragment", "Error occurred: $it")
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
         }
