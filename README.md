@@ -5,6 +5,7 @@
 | K3  | 0  |
 | Kavg  | 4.33  |
 | A1  | 8  |
+| A2  | 10  |
 
 
 # Android University Course Project Template
