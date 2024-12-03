@@ -13,6 +13,10 @@ android {
         viewBinding = true
     }
 
+    kapt {
+        correctErrorTypes = true
+    }
+
     defaultConfig {
         applicationId = "com.tasty.recipesapp"
         minSdk = 24
@@ -45,6 +49,13 @@ dependencies {
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.activity:activity:1.8.0")
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+
+
+    // Converter for JSON (like Gson)
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
 
     // Room dependencies
     implementation("androidx.room:room-runtime:2.6.0")

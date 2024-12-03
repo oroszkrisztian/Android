@@ -24,6 +24,7 @@ import com.tasty.recipesapp.databinding.ItemIngredientInputBinding
 import com.tasty.recipesapp.databinding.ItemInstructionInputBinding
 import java.io.ByteArrayOutputStream
 import kotlin.math.sqrt
+import com.tasty.recipesapp.Respository.ProfileViewModel
 
 class NewRecipeFragment : Fragment() {
 

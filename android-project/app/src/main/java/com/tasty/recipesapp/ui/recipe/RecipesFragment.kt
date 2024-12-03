@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tasty.recipesapp.R
+import com.tasty.recipesapp.Respository.ProfileViewModel
 import com.tasty.recipesapp.databinding.FragmentRecipesBinding
 import com.tasty.recipesapp.ui.recipe.adapter.RecipeAdapter
 
@@ -41,6 +42,7 @@ class RecipesFragment : Fragment() {
             super.onViewCreated(view, savedInstanceState)
             setupRecyclerView()
             observeViewModel()
+            viewModel.loadApiRecipes()
             binding.addRecipeButton.setOnClickListener {
                 findNavController().navigate(R.id.action_profileFragment_to_newRecipeFragment)
             }

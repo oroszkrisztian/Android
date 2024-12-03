@@ -1,14 +1,22 @@
-package com.tasty.recipesapp.ui.recipe
+package com.tasty.recipesapp.Respository
 
 import android.app.Application
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.tasty.recipesapp.Models.RecipeModel
-import com.tasty.recipesapp.Respository.RecipeRepository
+import com.google.gson.Gson
+import com.tasty.recipesapp.DTO.*
+import com.tasty.recipesapp.Models.*
+import com.tasty.recipesapp.Entity.RecipeEntity
+import com.tasty.recipesapp.api.client.RecipeApiClient
+import com.tasty.recipesapp.dao.RecipeDao
 import com.tasty.recipesapp.database.RecipeDatabase
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.io.IOException
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = RecipeRepository(
@@ -35,6 +43,16 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         loadMyRecipes()
         loadFavorites()
     }
+
+    //API
+    fun loadApiRecipes() {
+        viewModelScope.launch {
+            repository.testApiConnection() // This will update the LiveData
+        }
+    }
+
+
+    ////LOCAL DB
 
     // Add toggle favorite function
     fun toggleFavorite(recipe: RecipeModel) {

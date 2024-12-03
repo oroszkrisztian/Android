@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.tasty.recipesapp.Models.RecipeModel
 import com.tasty.recipesapp.databinding.FragmentRecipeDetailBinding
+import com.tasty.recipesapp.Respository.ProfileViewModel
 
 class RecipeDetailFragment : Fragment() {
 

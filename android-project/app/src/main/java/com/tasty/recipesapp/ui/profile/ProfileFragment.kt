@@ -9,9 +9,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tasty.recipesapp.databinding.FragmentProfileBinding
-import com.tasty.recipesapp.ui.recipe.ProfileViewModel
 import com.tasty.recipesapp.ui.recipe.adapter.RecipeAdapter
 import androidx.fragment.app.activityViewModels
+import com.tasty.recipesapp.Respository.ProfileViewModel
 
 
 class ProfileFragment : Fragment() {

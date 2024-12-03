@@ -45,24 +45,24 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
         loadLocalRecipes()
     }
 
-    private fun loadRecipes() {
-        viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                _error.value = null
-                val recipeList = withContext(Dispatchers.IO) {
-                    repository.getAllRecipes()
-                }
-                Log.d("RecipeListViewModel", "Loaded ${recipeList.size} recipes")
-                _recipes.value = recipeList
-            } catch (e: Exception) {
-                Log.e("RecipeListViewModel", "Error loading recipes", e)
-                _error.value = "Failed to load recipes: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
+//    private fun loadRecipes() {
+//        viewModelScope.launch {
+//            try {
+//                _isLoading.value = true
+//                _error.value = null
+//                val recipeList = withContext(Dispatchers.IO) {
+//                    repository.getAllRecipes()
+//                }
+//                Log.d("RecipeListViewModel", "Loaded ${recipeList.size} recipes")
+//                _recipes.value = recipeList
+//            } catch (e: Exception) {
+//                Log.e("RecipeListViewModel", "Error loading recipes", e)
+//                _error.value = "Failed to load recipes: ${e.message}"
+//            } finally {
+//                _isLoading.value = false
+//            }
+//        }
+//    }
 
     private fun loadLocalRecipes() {
         viewModelScope.launch {
@@ -77,42 +77,42 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun getRecipeById(recipeId: Int) {
-        viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                _error.value = null
-
-                // Check local recipes first
-                _localRecipes.value?.find { it.id == recipeId }?.let { recipe ->
-                    _selectedRecipe.value = recipe
-                    return@launch
-                }
-
-                // Then check JSON recipes
-                _recipes.value?.find { it.id == recipeId }?.let { recipe ->
-                    _selectedRecipe.value = recipe
-                    return@launch
-                }
-
-                // If not found in current lists, try loading from repository
-                val recipeList = withContext(Dispatchers.IO) {
-                    repository.getAllRecipes()
-                }
-
-                recipeList.find { it.id == recipeId }?.let { recipe ->
-                    _selectedRecipe.value = recipe
-                } ?: run {
-                    _error.value = "Recipe not found"
-                }
-
-            } catch (e: Exception) {
-                _error.value = "Failed to load recipe: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
+//    fun getRecipeById(recipeId: Int) {
+//        viewModelScope.launch {
+//            try {
+//                _isLoading.value = true
+//                _error.value = null
+//
+//                // Check local recipes first
+//                _localRecipes.value?.find { it.id == recipeId }?.let { recipe ->
+//                    _selectedRecipe.value = recipe
+//                    return@launch
+//                }
+//
+//                // Then check JSON recipes
+//                _recipes.value?.find { it.id == recipeId }?.let { recipe ->
+//                    _selectedRecipe.value = recipe
+//                    return@launch
+//                }
+//
+//                // If not found in current lists, try loading from repository
+//                val recipeList = withContext(Dispatchers.IO) {
+//                    repository.getAllRecipes()
+//                }
+//
+//                recipeList.find { it.id == recipeId }?.let { recipe ->
+//                    _selectedRecipe.value = recipe
+//                } ?: run {
+//                    _error.value = "Recipe not found"
+//                }
+//
+//            } catch (e: Exception) {
+//                _error.value = "Failed to load recipe: ${e.message}"
+//            } finally {
+//                _isLoading.value = false
+//            }
+//        }
+//    }
 
 
 }

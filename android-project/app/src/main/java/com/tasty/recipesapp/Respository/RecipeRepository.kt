@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.tasty.recipesapp.DTO.*
 import com.tasty.recipesapp.Models.*
 import com.tasty.recipesapp.Entity.RecipeEntity
+import com.tasty.recipesapp.api.client.RecipeApiClient
 import com.tasty.recipesapp.dao.RecipeDao
 import org.json.JSONObject
 import java.io.IOException
@@ -16,9 +17,33 @@ class RecipeRepository(
 ) {
     private val gson = Gson()
 
-    // Original JSON functions
-    suspend fun getAllRecipes(): List<RecipeModel> {
-        return readRecipesFromJson().map { it.toModel() }
+    private val apiClient = RecipeApiClient()
+    suspend fun testApiConnection() {
+        Log.d("API_TEST", "Starting API test...")
+
+        apiClient.getRecipes().fold(
+            onSuccess = { recipes ->
+                Log.d("API_TEST", "Successfully received ${recipes.size} recipes")
+
+                recipes.forEachIndexed { index, recipe ->
+                    Log.d("API_TEST", """
+                    Recipe #${index + 1}:
+                    ====================
+                    ID: ${recipe.recipeID}
+                    Name: ${recipe.name}
+                    Description: ${recipe.description}
+                    Servings: ${recipe.numServings}
+                    Country: ${recipe.country}
+                    Public: ${recipe.isPublic}
+                    ====================
+                """.trimIndent())
+                }
+            },
+            onFailure = { exception ->
+                Log.e("API_TEST", "API request failed", exception)
+                Log.e("API_TEST", "Error message: ${exception.message}")
+            }
+        )
     }
 
     suspend fun toggleFavorite(recipe: RecipeModel) {
@@ -30,27 +55,6 @@ class RecipeRepository(
     // Add function to get favorites
     suspend fun getFavoriteRecipes(): List<RecipeModel> {
         return getAllLocalRecipes().filter { it.isFavorite }
-    }
-
-    private fun readRecipesFromJson(): List<RecipeDTO> {
-        try {
-            val jsonString = context.assets
-                .open("recipe_details.json")
-                .bufferedReader()
-                .use { it.readText() }
-
-            data class RecipeResponse(val recipes: List<RecipeDTO>)
-            val response = gson.fromJson(jsonString, RecipeResponse::class.java)
-            Log.d("Repository", "Successfully loaded ${response.recipes.size} recipes")
-            return response.recipes
-
-        } catch (e: IOException) {
-            Log.e("Repository", "Error reading recipes file: ${e.message}")
-            return emptyList()
-        } catch (e: Exception) {
-            Log.e("Repository", "Error parsing recipes: ${e.message}")
-            return emptyList()
-        }
     }
 
     // New Room database functions
