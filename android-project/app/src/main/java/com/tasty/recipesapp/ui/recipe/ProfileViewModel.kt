@@ -37,6 +37,9 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _favorites = MutableLiveData<List<ApiRecipeDTO>>()
     val favorites: LiveData<List<ApiRecipeDTO>> = _favorites
 
+    private val _selectedRecipe = MutableLiveData<ApiRecipeDTO>()
+    val selectedRecipe: LiveData<ApiRecipeDTO> = _selectedRecipe
+
     init {
         loadRecipes()  // Add this
         loadFavorites()
@@ -89,6 +92,42 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             } catch (e: Exception) {
                 Log.e("com.tasty.recipeapp", "Failed to toggle favorite for recipe ${recipe.recipeID}", e)
                 _error.value = "Failed to update favorite: ${e.message}"
+            }
+        }
+    }
+
+
+    fun getRecipeById(id: Int) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val recipe = repository.getRecipeById(id)
+                _selectedRecipe.value = recipe
+                _error.value = null
+            } catch (e: Exception) {
+                _error.value = "Failed to load recipe: ${e.message}"
+            }
+            _isLoading.value = false
+        }
+    }
+
+    fun addNewRecipe(recipe: ApiRecipeDTO) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                repository.addRecipe(recipe).fold(
+                    onSuccess = { addedRecipe ->
+                        _error.value = null
+                        loadRecipes() // Refresh recipe list
+                        Log.d("com.tasty.recipeapp", "Recipe added successfully: ${addedRecipe.recipeID}")
+                    },
+                    onFailure = { e ->
+                        _error.value = "Failed to add recipe: ${e.message}"
+                        Log.e("com.tasty.recipeapp", "Failed to add recipe", e)
+                    }
+                )
+            } finally {
+                _isLoading.value = false
             }
         }
     }

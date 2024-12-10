@@ -45,4 +45,15 @@ class RecipeApiClient {
             Result.failure(e)
         }
     }
+
+    suspend fun addRecipe(recipe: ApiRecipeDTO): Result<ApiRecipeDTO> {
+        return try {
+            val response = recipeService.addRecipe(recipe)
+            Log.d(TAG, "Successfully added recipe with ID: ${response.recipeID}")
+            Result.success(response)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error adding recipe", e)
+            Result.failure(e)
+        }
+    }
 }

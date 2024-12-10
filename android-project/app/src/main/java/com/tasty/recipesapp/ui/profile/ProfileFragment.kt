@@ -10,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tasty.recipesapp.databinding.FragmentProfileBinding
 
-import androidx.fragment.app.activityViewModels
 import com.tasty.recipesapp.Respository.ProfileViewModel
 import com.tasty.recipesapp.ui.recipe.adapter.RecipeListAdapter
 
@@ -40,6 +39,11 @@ class ProfileFragment : Fragment() {
         recipeAdapter = RecipeListAdapter(
             onFavoriteClick = { recipe ->
                 viewModel.toggleFavorite(recipe)
+            },
+            onItemClick = { recipe ->
+                findNavController().navigate(
+                    ProfileFragmentDirections.actionProfileFragmentToRecipeDetailFragment(recipe.recipeID)
+                )
             }
         )
         binding.recyclerView.apply {

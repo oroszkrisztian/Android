@@ -15,7 +15,8 @@ import com.tasty.recipesapp.databinding.ItemRecipeBinding
 import com.tasty.recipesapp.databinding.ItemRecipeBinding.*
 
 class RecipeListAdapter(
-    private val onFavoriteClick: (ApiRecipeDTO) -> Unit
+    private val onFavoriteClick: (ApiRecipeDTO) -> Unit,
+    private val onItemClick: (ApiRecipeDTO) -> Unit
 ) : RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder>() {
     private var recipes = listOf<ApiRecipeDTO>()
     private var favoriteIds = setOf<Int>()
@@ -64,6 +65,10 @@ class RecipeListAdapter(
                 favoriteButton.text = if (isFavorited) "Liked" else "Like"
                 favoriteButton.setOnClickListener {
                     onFavoriteClick(recipe)
+                }
+
+                root.setOnClickListener {
+                    onItemClick(recipe)
                 }
             }
         }

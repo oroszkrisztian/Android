@@ -13,16 +13,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.tasty.recipesapp.Models.RecipeModel
 import com.tasty.recipesapp.databinding.FragmentRecipeDetailBinding
 import com.tasty.recipesapp.Respository.ProfileViewModel
 
 class RecipeDetailFragment : Fragment() {
-
     private var _binding: FragmentRecipeDetailBinding? = null
     private val binding get() = _binding!!
-    private val args: RecipeDetailFragmentArgs by navArgs()
     private val viewModel: ProfileViewModel by activityViewModels()
+    private val args: RecipeDetailFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,72 +35,65 @@ class RecipeDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
-        // Get recipe by ID
-        //viewModel.getRecipeById(args.recipeId)
-
-        // Observe selected recipe
-//        viewModel.selectedRecipe.observe(viewLifecycleOwner) { recipe ->
-//            recipe?.let {
-//                displayRecipeDetails(it)
-//            }
-//        }
+        loadRecipeDetails()
     }
 
+    private fun loadRecipeDetails() {
+        val recipeId = args.recipeId
+        viewModel.getRecipeById(recipeId)
 
+        viewModel.selectedRecipe.observe(viewLifecycleOwner) { recipe ->
+            recipe?.let {
+                binding.apply {
+                    titleText.text = it.name
+                    descriptionText.text = it.description
+                    servingsText.text = "Serves ${it.numServings}"
 
-    @SuppressLint("SetTextI18n")
-    private fun displayRecipeDetails(recipe: RecipeModel) {
-        try {
-            binding.apply {
-                // Display recipe image
-                if (recipe.thumbnailUrl.isNotEmpty()) {
-                    try {
-                        val imageBytes = Base64.decode(recipe.thumbnailUrl, Base64.DEFAULT)
-                        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                        recipeImage.setImageBitmap(bitmap)
-                    } catch (e: Exception) {
-                        Log.e("RecipeDetailFragment", "Error loading image: ${e.message}")
-                        recipeImage.setImageResource(android.R.drawable.ic_menu_gallery)
+                    // Load image with Glide
+                    Glide.with(requireContext())
+                        .load(it.thumbnailUrl)
+                        .placeholder(android.R.drawable.ic_menu_gallery)
+                        .into(recipeImage)
+
+                    // Nutrition information
+                    nutritionText.text = recipe.nutrition?.let {
+                        """
+                            Calories: ${it.calories}
+                            Protein: ${it.protein}g
+                            Fat: ${it.fat}g
+                            Carbohydrates: ${it.carbohydrates}g
+                            Sugar: ${it.sugar}g
+                            Fiber: ${it.fiber}g
+                            """.trimIndent()
+                    } ?: "Nutrition information not available"
+
+                    // Display components/ingredients if available
+                    if (it.components.isNotEmpty()) {
+                        ingredientsText.text = it.components.joinToString("\n") { component ->
+                            "• ${component.rawText}"
+                        }
+                    } else {
+                        ingredientsText.text = "No ingredients listed"
                     }
-                } else {
-                    recipeImage.setImageResource(android.R.drawable.ic_menu_gallery)
-                }
 
-                // Basic Info Card
-                titleText.text = recipe.name
-                servingsText.text = "Serves ${recipe.servings}"
-                descriptionText.text = recipe.description
+                    // Display instructions if available
+                    if (it.instructions.isNotEmpty()) {
+                        instructionsText.text = it.instructions.joinToString("\n\n") { instruction ->
+                            "${instruction.position}. ${instruction.displayText}"
+                        }
+                    } else {
+                        instructionsText.text = "No instructions available"
+                    }
 
-                // Nutrition Card
-                nutritionText.text = """
-                Calories: ${recipe.nutrition.calories}
-                Protein: ${recipe.nutrition.protein}g
-                Fat: ${recipe.nutrition.fat}g
-                Carbs: ${recipe.nutrition.carbohydrates}g
-            """.trimIndent()
-
-                // Ingredients Card
-                ingredientsText.text = recipe.components.joinToString("\n") {
-                    "• ${it.amount} of ${it.ingredient}"
-                }
-
-                // Instructions Card
-                instructionsText.text = recipe.instructions.joinToString("\n\n") {
-                    "${it.position}. ${it.text}"
+                    // Add back button functionality
+                    backButton.setOnClickListener {
+                        findNavController().navigateUp()
+                    }
                 }
             }
-            Log.d("RecipeDetailFragment", "Recipe details displayed")
-        } catch (e: Exception) {
-            Log.e("RecipeDetailFragment", "Error displaying recipe: ${e.message}")
-            e.printStackTrace()
-            Toast.makeText(context, "Error displaying recipe", Toast.LENGTH_SHORT).show()
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

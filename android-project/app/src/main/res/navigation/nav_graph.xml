@@ -43,9 +43,9 @@
         android:name="com.tasty.recipesapp.ui.recipe.RecipesFragment"
         android:label="fragment_recipes"
         tools:layout="@layout/fragment_recipes" >
-        <!-- Add this action -->
+        <!-- Change this action ID -->
         <action
-            android:id="@+id/action_profileFragment_to_newRecipeFragment"
+            android:id="@+id/action_recipesFragment_to_newRecipeFragment"
             app:destination="@id/newRecipeFragment" />
         <action
             android:id="@+id/action_recipesFragment_to_recipeDetailFragment"
@@ -62,4 +62,6 @@
         android:id="@+id/mainActivity"
         android:name="com.tasty.recipesapp.activities.MainActivity"
         android:label="MainActivity" />
+
+
 </navigation>

@@ -13,7 +13,8 @@ data class ApiRecipeDTO(
     val numServings: Int,
     val components: List<ApiComponentDTO> = emptyList(),
     val instructions: List<ApiInstructionDTO> = emptyList(),
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val nutrition: ApiNutritionDTO? = null
 )
 
 data class ApiComponentDTO(
@@ -43,4 +44,13 @@ data class ApiInstructionDTO(
     val instructionID: Int,
     val displayText: String,
     val position: Int
+)
+
+data class ApiNutritionDTO(
+    val calories: Int,
+    val protein: Float,
+    val fat: Float,
+    val carbohydrates: Float,
+    val sugar: Float,
+    val fiber: Float
 )

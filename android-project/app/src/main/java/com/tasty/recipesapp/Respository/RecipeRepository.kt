@@ -43,15 +43,17 @@ class RecipeRepository(private val recipeDao: RecipeDao) {
         }
     }
 
-    suspend fun verifyInsertion(recipeId: Int) {
-        val count = recipeDao.getRecipeCount()
-        Log.d("com.tasty.recipeapp", "Total recipes in DB: $count")
 
-        val recipe = recipeDao.getRecipeByApiId(recipeId)
-        Log.d("com.tasty.recipeapp", "Found recipe in DB: ${recipe != null}")
-    }
 
     suspend fun deleteRecipe(recipeId: Int) {
         recipeDao.deleteByApiId(recipeId)
+    }
+
+    suspend fun addRecipe(recipe: ApiRecipeDTO): Result<ApiRecipeDTO> {
+        return apiClient.addRecipe(recipe)
+    }
+
+    suspend fun getRecipeById(id: Int): ApiRecipeDTO {
+        return apiClient.getRecipeById(id).getOrThrow()
     }
 }

@@ -35,13 +35,24 @@ class RecipesFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
         viewModel.loadRecipes()
-        viewModel.loadFavorites() // Add this line
+        viewModel.loadFavorites()
+
+        binding.addRecipeButton.setOnClickListener {
+            findNavController().navigate(
+                RecipesFragmentDirections.actionRecipesFragmentToNewRecipeFragment()
+            )
+        }
     }
 
     private fun setupRecyclerView() {
         recipeAdapter = RecipeListAdapter(
             onFavoriteClick = { recipe ->
                 viewModel.toggleFavorite(recipe)
+            },
+            onItemClick = { recipe ->
+                findNavController().navigate(
+                    RecipesFragmentDirections.actionRecipesFragmentToRecipeDetailFragment(recipe.recipeID)
+                )
             }
         )
         binding.recyclerView.apply {

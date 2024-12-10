@@ -5,7 +5,9 @@ package com.tasty.recipesapp.api.service
 import com.tasty.recipesapp.api.dto.ApiRecipeDTO
 import com.tasty.recipesapp.model.RecipeResponse
 import com.tasty.recipesapp.model.SingleRecipeResponse
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface RecipeService {
@@ -14,4 +16,7 @@ interface RecipeService {
 
     @GET("api/recipes/{id}")
     suspend fun getRecipeById(@Path("id") recipeId: Int): ApiRecipeDTO
+
+    @POST("api/recipes")
+    suspend fun addRecipe(@Body recipe: ApiRecipeDTO): ApiRecipeDTO
 }
