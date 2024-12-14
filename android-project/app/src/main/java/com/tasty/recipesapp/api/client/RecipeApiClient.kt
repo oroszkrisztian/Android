@@ -64,11 +64,21 @@ class RecipeApiClient {
         return try {
             val token = TokenManager.getToken() ?: throw IllegalStateException("No auth token available")
             val response = recipeService.getMyRecipes(token)
-            Log.d(TAG, "Successfully fetched my recipes: ${response.size}")
-            Result.success(response)
+
+            // Filter recipes to ensure they belong to the authorized user
+            val filteredRecipes = response.filter { it.userEmail == "orosz.krisztian@student.ms.sapientia.ro" }
+
+            // Check if filtered recipes are empty (unauthorized recipes found)
+            if (filteredRecipes.isEmpty()) {
+                throw SecurityException("Access denied: No recipes found for the authorized user")
+            }
+
+            Log.d(TAG, "Successfully fetched my recipes: ${filteredRecipes.size}")
+            Result.success(filteredRecipes)
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching my recipes", e)
             Result.failure(e)
         }
     }
+
 }
