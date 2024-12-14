@@ -17,6 +17,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import com.tasty.recipesapp.Models.*
@@ -33,6 +35,12 @@ import com.tasty.recipesapp.api.dto.ApiInstructionDTO
 import com.tasty.recipesapp.api.dto.ApiMeasurementDTO
 import com.tasty.recipesapp.api.dto.ApiRecipeDTO
 import com.tasty.recipesapp.api.dto.ApiUnitDTO
+import com.tasty.recipesapp.auth.manager.TokenManager
+import com.tasty.recipesapp.ui.home.HomeFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.math.abs
 
 class NewRecipeFragment : Fragment() {
     private var _binding: FragmentNewRecipeBinding? = null
@@ -110,21 +118,32 @@ class NewRecipeFragment : Fragment() {
         }
     }
 
+
+
     private fun saveRecipe() {
         try {
+            // Check if we have a token
+            if (TokenManager.getToken() == null) {
+                Toast.makeText(context, "Please login first to add recipes", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            // Get input values
             val name = binding.recipeNameInput.text.toString()
             val description = binding.recipeDescriptionInput.text.toString()
             val servings = binding.servingsInput.text.toString().toIntOrNull() ?: 0
             val keywords = binding.keywordsInput.text.toString()
             val imageUrl = binding.imageUrlInput.text.toString()
 
+            // Validate required fields
             if (name.isBlank() || description.isBlank() || servings == 0) {
                 Toast.makeText(context, "Please fill in all required fields", Toast.LENGTH_SHORT).show()
                 return
             }
 
+            // Create recipe with positive ID
             val recipe = ApiRecipeDTO(
-                recipeID = System.currentTimeMillis().toInt(),
+                recipeID = abs(System.currentTimeMillis().toInt()),
                 name = name,
                 description = description,
                 thumbnailUrl = imageUrl,
@@ -136,16 +155,28 @@ class NewRecipeFragment : Fragment() {
                 numServings = servings,
                 components = collectIngredients(),
                 instructions = collectInstructions(),
-                isFavorite = false
             )
 
-            viewModel.addNewRecipe(recipe)
-            Toast.makeText(context, "Recipe saved successfully", Toast.LENGTH_SHORT).show()
-            findNavController().navigateUp()
+            lifecycleScope.launch {
+                try {
+                    viewModel.addNewRecipe(recipe)
+
+                    // Show success message and navigate back
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Recipe saved successfully", Toast.LENGTH_SHORT).show()
+                        findNavController().navigateUp()
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Log.e("NewRecipeFragment", "Error saving recipe: ${e.message}")
+                        Toast.makeText(context, "Error saving recipe: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
 
         } catch (e: Exception) {
-            Log.e("NewRecipeFragment", "Error saving recipe: ${e.message}")
-            Toast.makeText(context, "Error saving recipe: ${e.message}", Toast.LENGTH_LONG).show()
+            Log.e("NewRecipeFragment", "Error preparing recipe: ${e.message}")
+            Toast.makeText(context, "Error preparing recipe: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 

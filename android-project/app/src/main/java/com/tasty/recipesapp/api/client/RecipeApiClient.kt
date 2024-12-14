@@ -3,6 +3,7 @@ package com.tasty.recipesapp.api.client
 import android.util.Log
 import com.tasty.recipesapp.api.dto.ApiRecipeDTO
 import com.tasty.recipesapp.api.service.RecipeService
+import com.tasty.recipesapp.auth.manager.TokenManager
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -48,11 +49,25 @@ class RecipeApiClient {
 
     suspend fun addRecipe(recipe: ApiRecipeDTO): Result<ApiRecipeDTO> {
         return try {
-            val response = recipeService.addRecipe(recipe)
-            Log.d(TAG, "Successfully added recipe with ID: ${response.recipeID}")
+            // Get token from TokenManager
+            val token = TokenManager.getToken() ?: throw IllegalStateException("No auth token available")
+            val response = recipeService.addRecipe(token, recipe)
+            Log.d(TAG, "Successfully added recipe ${response.recipeID}")
             Result.success(response)
         } catch (e: Exception) {
             Log.e(TAG, "Error adding recipe", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getMyRecipes(): Result<List<ApiRecipeDTO>> {
+        return try {
+            val token = TokenManager.getToken() ?: throw IllegalStateException("No auth token available")
+            val response = recipeService.getMyRecipes(token)
+            Log.d(TAG, "Successfully fetched my recipes: ${response.size}")
+            Result.success(response)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching my recipes", e)
             Result.failure(e)
         }
     }

@@ -131,4 +131,20 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
+
+    fun loadMyRecipes() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            repository.getMyRecipes().fold(
+                onSuccess = { recipes ->
+                    _recipes.value = recipes
+                    _error.value = null
+                },
+                onFailure = { e ->
+                    _error.value = e.message
+                }
+            )
+            _isLoading.value = false
+        }
+    }
 }

@@ -13,7 +13,6 @@ data class ApiRecipeDTO(
     val numServings: Int,
     val components: List<ApiComponentDTO> = emptyList(),
     val instructions: List<ApiInstructionDTO> = emptyList(),
-    val isFavorite: Boolean = false,
     val nutrition: ApiNutritionDTO? = null
 )
 

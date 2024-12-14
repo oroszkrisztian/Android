@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.tasty.recipesapp.R
+import com.tasty.recipesapp.auth.manager.TokenManager
 import com.tasty.recipesapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -17,6 +18,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        TokenManager.init(this)
 
         // Change status bar color to green
         window.statusBarColor = getColor(R.color.green)

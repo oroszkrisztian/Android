@@ -82,4 +82,26 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // Retrofit Interceptor for adding headers
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+
+    // DataStore for securely storing tokens
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Security Crypto for encryption
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+    // Coroutines for async operations
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+
+    // Fragment KTX for viewModels() delegate
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
+    // OAuth and HTTP
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 }

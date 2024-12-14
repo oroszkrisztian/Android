@@ -326,15 +326,31 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/saveRecipeButton"
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save Recipe"
-                android:textColor="@color/white"
-                android:padding="12dp"
-                app:cornerRadius="8dp"
-                style="@style/Widget.MaterialComponents.Button"/>
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/saveRecipeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Save Recipe"
+                    android:textColor="@color/white"
+                    android:padding="12dp"
+                    app:cornerRadius="8dp"
+                    style="@style/Widget.MaterialComponents.Button"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

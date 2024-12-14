@@ -20,6 +20,7 @@ class RecipesFragment : Fragment() {
     private var _binding: FragmentRecipesBinding? = null
     private val binding get() = _binding!!
     private lateinit var recipeAdapter: RecipeListAdapter
+    private var showingMyRecipes = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,6 +34,7 @@ class RecipesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        setupFilterButton()
         observeViewModel()
         viewModel.loadRecipes()
         viewModel.loadFavorites()
@@ -41,6 +43,18 @@ class RecipesFragment : Fragment() {
             findNavController().navigate(
                 RecipesFragmentDirections.actionRecipesFragmentToNewRecipeFragment()
             )
+        }
+    }
+
+    private fun setupFilterButton() {
+        binding.filterButton.setOnClickListener {
+            showingMyRecipes = !showingMyRecipes
+            binding.filterButton.text = if (showingMyRecipes) "Show All" else "Show Mine"
+            if (showingMyRecipes) {
+                viewModel.loadMyRecipes()
+            } else {
+                viewModel.loadRecipes()
+            }
         }
     }
 

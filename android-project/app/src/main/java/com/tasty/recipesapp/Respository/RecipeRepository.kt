@@ -50,10 +50,17 @@ class RecipeRepository(private val recipeDao: RecipeDao) {
     }
 
     suspend fun addRecipe(recipe: ApiRecipeDTO): Result<ApiRecipeDTO> {
-        return apiClient.addRecipe(recipe)
+        return try {
+            apiClient.addRecipe(recipe)
+        } catch (e: Exception) {
+            Log.e("Repository", "Failed to add recipe", e)
+            Result.failure(e)
+        }
     }
 
     suspend fun getRecipeById(id: Int): ApiRecipeDTO {
         return apiClient.getRecipeById(id).getOrThrow()
     }
+
+    suspend fun getMyRecipes(): Result<List<ApiRecipeDTO>> = apiClient.getMyRecipes()
 }
