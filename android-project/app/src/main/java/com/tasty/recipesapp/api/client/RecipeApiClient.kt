@@ -79,6 +79,7 @@ class RecipeApiClient {
             Log.e(TAG, "Error fetching my recipes", e)
             Result.failure(e)
         }
+
     }
 
 }
