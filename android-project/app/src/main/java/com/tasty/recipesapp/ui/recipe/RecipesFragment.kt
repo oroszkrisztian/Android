@@ -1,7 +1,6 @@
 package com.tasty.recipesapp.ui.recipe
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.tasty.recipesapp.R
 import com.tasty.recipesapp.Respository.ProfileViewModel
 import com.tasty.recipesapp.databinding.FragmentRecipesBinding
 import com.tasty.recipesapp.ui.recipe.adapter.RecipeListAdapter
@@ -49,7 +47,11 @@ class RecipesFragment : Fragment() {
     private fun setupFilterButton() {
         binding.filterButton.setOnClickListener {
             showingMyRecipes = !showingMyRecipes
+
             binding.filterButton.text = if (showingMyRecipes) "Show All" else "Show Mine"
+
+            recipeAdapter.setShowDeleteButton(showingMyRecipes)
+
             if (showingMyRecipes) {
                 viewModel.loadMyRecipes()
             } else {
@@ -57,6 +59,12 @@ class RecipesFragment : Fragment() {
             }
         }
     }
+
+
+
+
+
+
 
     private fun setupRecyclerView() {
         recipeAdapter = RecipeListAdapter(
@@ -67,6 +75,9 @@ class RecipesFragment : Fragment() {
                 findNavController().navigate(
                     RecipesFragmentDirections.actionRecipesFragmentToRecipeDetailFragment(recipe.recipeID)
                 )
+            },
+            onDeleteClick = { recipe ->
+                viewModel.deleteRecipe(recipe.recipeID)
             }
         )
         binding.recyclerView.apply {
@@ -94,6 +105,8 @@ class RecipesFragment : Fragment() {
             }
         }
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

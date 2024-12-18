@@ -82,4 +82,15 @@ class RecipeApiClient {
 
     }
 
+    suspend fun deleteRecipe(token: String, recipeId: Int): Result<Unit> {
+        return try {
+            recipeService.deleteRecipe(token, recipeId)
+            Log.d(TAG, "Successfully deleted recipe: $recipeId")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error deleting recipe $recipeId", e)
+            Log.e(TAG, "Error message: ${e.message}")
+            Result.failure(e)
+        }
+    }
 }

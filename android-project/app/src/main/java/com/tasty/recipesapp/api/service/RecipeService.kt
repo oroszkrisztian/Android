@@ -6,6 +6,7 @@ import com.tasty.recipesapp.api.dto.ApiRecipeDTO
 import com.tasty.recipesapp.model.RecipeResponse
 import com.tasty.recipesapp.model.SingleRecipeResponse
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -28,5 +29,12 @@ interface RecipeService {
     suspend fun getMyRecipes(
         @Header("Authorization") authorization: String
     ): List<ApiRecipeDTO>
+
+    @DELETE("api/recipes/{id}")
+    suspend fun deleteRecipe(
+        @Header("Authorization") authorization: String,
+        @Path("id") recipeId: Int
+    )
+
 
 }

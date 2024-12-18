@@ -1,25 +1,14 @@
 package com.tasty.recipesapp.Respository
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Transaction
-import com.google.gson.Gson
-import com.tasty.recipesapp.DTO.*
-import com.tasty.recipesapp.Models.*
-import com.tasty.recipesapp.Entity.RecipeEntity
-import com.tasty.recipesapp.api.client.RecipeApiClient
 import com.tasty.recipesapp.api.dto.ApiRecipeDTO
-import com.tasty.recipesapp.dao.RecipeDao
 import com.tasty.recipesapp.database.RecipeDatabase
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import java.io.IOException
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = RecipeDatabase.getDatabase(application).recipeDao()
@@ -40,8 +29,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _selectedRecipe = MutableLiveData<ApiRecipeDTO>()
     val selectedRecipe: LiveData<ApiRecipeDTO> = _selectedRecipe
 
+    private var showingMyRecipes = false
+
     init {
-        loadRecipes()  // Add this
+        loadRecipes()
         loadFavorites()
     }
 
@@ -81,9 +72,9 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 val isFavorited = currentFavorites.any { it.recipeID == recipe.recipeID }
 
                 if (isFavorited) {
-                    repository.deleteRecipe(recipe.recipeID)
+                    repository.removeFromFav(recipe.recipeID)
                 } else {
-                    repository.saveRecipe(recipe)
+                    repository.saveRecipeFav(recipe)
                 }
 
                 loadFavorites() // Refresh favorites
@@ -141,10 +132,35 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                     _error.value = null
                 },
                 onFailure = { e ->
+                    _recipes.value = emptyList() // Set to empty list on failure
                     _error.value = e.message
                 }
             )
             _isLoading.value = false
+        }
+    }
+
+
+
+
+
+
+    fun deleteRecipe(recipeId: Int) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                repository.deleteRecipe(recipeId)
+                // Refresh the list after deletion
+                if (showingMyRecipes) {
+                    loadMyRecipes()
+                } else {
+                    loadRecipes()
+                }
+            } catch (e: Exception) {
+                _error.value = "Failed to delete recipe: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }

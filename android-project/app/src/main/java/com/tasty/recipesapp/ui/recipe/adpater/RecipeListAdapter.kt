@@ -16,13 +16,25 @@ import com.tasty.recipesapp.databinding.ItemRecipeBinding.*
 
 class RecipeListAdapter(
     private val onFavoriteClick: (ApiRecipeDTO) -> Unit,
-    private val onItemClick: (ApiRecipeDTO) -> Unit
+    private val onItemClick: (ApiRecipeDTO) -> Unit,
+    private val onDeleteClick: (ApiRecipeDTO) -> Unit
 ) : RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder>() {
     private var recipes = listOf<ApiRecipeDTO>()
     private var favoriteIds = setOf<Int>()
+    private var showDeleteButton = false
 
     fun updateRecipes(newRecipes: List<ApiRecipeDTO>) {
         recipes = newRecipes
+        notifyDataSetChanged()
+    }
+
+    fun updateFavorites(favorites: List<ApiRecipeDTO>) {
+        favoriteIds = favorites.map { it.recipeID }.toSet()
+        notifyDataSetChanged()
+    }
+
+    fun setShowDeleteButton(show: Boolean) {
+        showDeleteButton = show
         notifyDataSetChanged()
     }
 
@@ -39,12 +51,6 @@ class RecipeListAdapter(
 
     override fun getItemCount() = recipes.size
 
-    fun updateFavorites(favorites: List<ApiRecipeDTO>) {
-        favoriteIds = favorites.map { it.recipeID }.toSet()
-        Log.d("com.tasty.recipeapp", "Updated favorite IDs: $favoriteIds")
-        notifyDataSetChanged()
-    }
-
     inner class RecipeViewHolder(private val binding: ItemRecipeBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -60,11 +66,14 @@ class RecipeListAdapter(
                     .placeholder(android.R.drawable.ic_menu_gallery)
                     .into(recipeImage)
 
-                val isFavorited = favoriteIds.contains(recipe.recipeID)
-                Log.d("com.tasty.recipeapp", "Recipe ${recipe.recipeID} is favorited: $isFavorited")
-                favoriteButton.text = if (isFavorited) "Liked" else "Like"
+                favoriteButton.text = if (favoriteIds.contains(recipe.recipeID)) "Liked" else "Like"
                 favoriteButton.setOnClickListener {
                     onFavoriteClick(recipe)
+                }
+
+                deleteButton.visibility = if (showDeleteButton) View.VISIBLE else View.GONE
+                deleteButton.setOnClickListener {
+                    onDeleteClick(recipe)
                 }
 
                 root.setOnClickListener {
@@ -73,5 +82,4 @@ class RecipeListAdapter(
             }
         }
     }
-
 }

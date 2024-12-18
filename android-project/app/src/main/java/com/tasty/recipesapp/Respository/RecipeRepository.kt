@@ -1,24 +1,21 @@
 package com.tasty.recipesapp.Respository
 
-import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
-import com.tasty.recipesapp.DTO.*
-import com.tasty.recipesapp.Models.*
 import com.tasty.recipesapp.Entity.RecipeEntity
 import com.tasty.recipesapp.api.client.RecipeApiClient
 import com.tasty.recipesapp.api.dto.ApiRecipeDTO
-import com.tasty.recipesapp.api.service.RecipeService
+import com.tasty.recipesapp.auth.manager.TokenManager
 import com.tasty.recipesapp.dao.RecipeDao
-import org.json.JSONObject
-import java.io.IOException
 
 class RecipeRepository(private val recipeDao: RecipeDao) {
     private val apiClient = RecipeApiClient()
 
     suspend fun getRecipes(): Result<List<ApiRecipeDTO>> = apiClient.getRecipes()
 
-    suspend fun saveRecipe(recipe: ApiRecipeDTO) {
+
+    //add to fav
+    suspend fun saveRecipeFav(recipe: ApiRecipeDTO) {
         Log.d("com.tasty.recipeapp", "Saving recipe: ${recipe.recipeID}")
         val recipeEntity = RecipeEntity(
             recipeId = recipe.recipeID,
@@ -30,6 +27,7 @@ class RecipeRepository(private val recipeDao: RecipeDao) {
         Log.d("com.tasty.recipeapp", "Total recipes after save: $count")
     }
 
+    //load fav
     suspend fun getFavoriteRecipes(): List<ApiRecipeDTO> {
         val favorites = recipeDao.getAllRecipes()
         Log.d("com.tasty.recipeapp", "Raw favorites from DB: ${favorites.size}")
@@ -44,9 +42,9 @@ class RecipeRepository(private val recipeDao: RecipeDao) {
     }
 
 
-
-    suspend fun deleteRecipe(recipeId: Int) {
-        recipeDao.deleteByApiId(recipeId)
+    //delete from fav
+    suspend fun removeFromFav(recipeId: Int) {
+        recipeDao.removeFromFav(recipeId)
     }
 
     suspend fun addRecipe(recipe: ApiRecipeDTO): Result<ApiRecipeDTO> {
@@ -63,4 +61,15 @@ class RecipeRepository(private val recipeDao: RecipeDao) {
     }
 
     suspend fun getMyRecipes(): Result<List<ApiRecipeDTO>> = apiClient.getMyRecipes()
+
+    suspend fun deleteRecipe(recipeId: Int): Result<Unit> {
+        return try {
+            val token = TokenManager.getToken() ?: throw IllegalStateException("No auth token available")
+            apiClient.deleteRecipe(token, recipeId)
+        } catch (e: Exception) {
+            Log.e("Repository", "Failed to delete recipe", e)
+            Result.failure(e)
+        }
+    }
+
 }

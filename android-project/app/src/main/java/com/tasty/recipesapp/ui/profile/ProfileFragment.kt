@@ -44,6 +44,9 @@ class ProfileFragment : Fragment() {
                 findNavController().navigate(
                     ProfileFragmentDirections.actionProfileFragmentToRecipeDetailFragment(recipe.recipeID)
                 )
+            },
+            onDeleteClick = { recipe ->
+                viewModel.toggleFavorite(recipe)
             }
         )
         binding.recyclerView.apply {

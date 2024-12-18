@@ -104,4 +104,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+
+    //courutine
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+
 }

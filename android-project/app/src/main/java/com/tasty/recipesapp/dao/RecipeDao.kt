@@ -1,6 +1,5 @@
 package com.tasty.recipesapp.dao
 
-import android.util.Log
 import androidx.room.*
 import com.tasty.recipesapp.Entity.RecipeEntity
 
@@ -21,5 +20,5 @@ interface RecipeDao {
     suspend fun getRecipeByApiId(apiId: Int): RecipeEntity?
 
     @Query("DELETE FROM recipe WHERE recipe_id = :apiId")
-    suspend fun deleteByApiId(apiId: Int)
+    suspend fun removeFromFav(apiId: Int)
 }
